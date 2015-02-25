@@ -398,6 +398,7 @@
 				9BB30A5E1A9C0D4D006EB245 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		9BB30A5F1A9C0D4D006EB245 /* Build configuration list for PBXNativeTarget "tosTests" */ = {
 			isa = XCConfigurationList;
@@ -406,6 +407,7 @@
 				9BB30A611A9C0D4D006EB245 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

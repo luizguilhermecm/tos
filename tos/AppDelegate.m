@@ -6,8 +6,9 @@
 //  Copyright (c) 2015 snk. All rights reserved.
 //
 
-#define UPDATE 1
-#define IDLE_MAX 10
+#define UPDATE 2
+#define IDLE_MAX 15
+#define REFRESH_MENU 5
 #import "AppDelegate.h"
 
 @interface AppDelegate ()
@@ -15,9 +16,21 @@
 @property (weak) IBOutlet NSWindow *window;
 @property (strong, nonatomic) NSStatusItem *statusItem;
 @property NSInteger tos;
-@property NSInteger idleTimes;
+@property NSInteger idleT;
+@property NSInteger notT;
 @property (strong, nonatomic) NSDate *startTime;
 @property (nonatomic) NSTimeInterval intervalTOS;
+
+@property (strong) IBOutlet NSMenu * tosMenu;
+@property (strong) IBOutlet NSMenuItem * idleMI;
+@property (strong) IBOutlet NSMenuItem * tosMI;
+@property (strong) IBOutlet NSMenuItem * notMI;
+
+@property(readonly, strong) NSRunningApplication *frontmostApplication;
+
+
+@property(readonly, strong) NSNotificationCenter *notificationCenter;
+
 
 @property BOOL isIdle;
 @property BOOL isTOS;
@@ -26,109 +39,132 @@
 
 @implementation AppDelegate
 
--(NSString *)formatTos:(NSInteger)interval {
+-(NSString *)formatTos:(NSInteger)interval status:(NSString*)astatus{
     NSInteger ti = (NSInteger)interval;
     NSInteger seconds = ti % 60;
     NSInteger minutes = (ti / 60) % 60;
     NSInteger hours = (ti / 3600);
-    return [NSString stringWithFormat:@"%02ld:%02ld:%02ld", (long)hours, (long)minutes, (long)seconds];
+    return [NSString stringWithFormat:@"%@ %02ld:%02ld:%02ld", astatus, (long)hours, (long)minutes, (long)seconds];
 }
 
 -(void)updateTimer {
     //NSTimeInterval timeInterval = [_start timeIntervalSinceNow];
     if (_isIdle) {
+        [_idleMI setTitle:[self formatTos:_idleT status:@"IDLE:"]];
         [_statusItem setTitle:@"IDLE"];
+    } else if (_isTOS) {
+        [_tosMI setTitle:[self formatTos:_tos status:@"TOS:"]];
+        [_statusItem setTitle:@"TOS"];
     } else {
-        NSString * formated;
-        NSInteger seconds = _tos % 60;
-        NSInteger minutes = (_tos / 60) % 60;
-        NSInteger hours = (_tos / 3600);
-        formated =  [NSString stringWithFormat:@"%02ld:%02ld:%02ld", (long)hours, (long)minutes, (long)seconds];
-        [_statusItem setTitle:[NSString stringWithFormat:@"tos: %@", formated]];
+        [_notMI setTitle:[self formatTos:_notT status:@"NOT:"]];
+        [_statusItem setTitle:@"NOT"];
     }
 }
 
 
--(void)minusTimer {
-    
+-(void)idleTimer {
+    _idleT += UPDATE;
+    //    [self updateTimer];
 }
 
 
-- (void)systemIdleTimeVoid
+-(void)tosTimer {
+    _tos += UPDATE;
+    //    [self updateTimer];
+}
+
+-(void)notTimer {
+    _notT += UPDATE;
+    //    [self updateTimer];
+}
+
+- (BOOL)isSystemIdle
 {
     CFTimeInterval timeSinceLastEvent = CGEventSourceSecondsSinceLastEventType(kCGEventSourceStateHIDSystemState, kCGAnyInputEventType);
-    NSLog(@"\ntempo= %f", timeSinceLastEvent);
+    
     if (timeSinceLastEvent > IDLE_MAX) {
-        if (_isIdle == YES) {
-            //do nothing;
-        } else {
-            _tos -= UPDATE;
-            _isIdle = YES;
-        }
+        _isIdle = YES;
+        return YES;
     } else {
-        _tos += UPDATE;
         _isIdle = NO;
+        return NO;
     }
-    [self updateTimer];
 }
 
--(void)lookApplicationsScore{
-    // lista os applicativos de "usuários"
-    NSWorkspace * ws = [NSWorkspace sharedWorkspace];
-    NSArray * apps = [ws runningApplications];
-    NSUInteger count = [apps count];
-    
-    
-    int score = 0;
-    for (NSUInteger i = 0; i < count; i++) {
-        NSRunningApplication *app = [apps objectAtIndex: i];
-        
-        if(app.activationPolicy == NSApplicationActivationPolicyRegular) {
-            
-            if([app.localizedName isEqualToString:@"MindNode Pro"]){
-                score+=2;
-            } else if ([app.localizedName isEqualToString:@"MacVim"]){
-                score++;
-            }
-            else if ([app.localizedName isEqualToString:@"TextEdit"]){
-                score++;
-            }
-            else if ([app.localizedName isEqualToString:@"Preview"]){
-                score++;
-            }
-            if(app.active) {
-                NSLog(@"app ativo: %@",app.localizedName);
-            }
-            if (app.hidden){
-                 NSLog(@"app hidden: %@",app.localizedName);
-                NSLog(@"app PID: %d",app.processIdentifier);
 
-            }
-        }
-        
+
+-(void)lookApplicationsScore{
+    int score = 0;
+
+    NSArray * running;
+    running = [NSRunningApplication runningApplicationsWithBundleIdentifier:@"com.apple.TextEdit"];
+    if([running count] > 0){
+        score++;
     }
     
-    if (score > 3){
-        
-        [self systemIdleTimeVoid];
-        /*
-        NSTimeInterval timeInterval = [_startTime timeIntervalSinceNow];
-        NSLog(@"interval: %f", timeInterval);
-        */
+    running = [NSRunningApplication runningApplicationsWithBundleIdentifier:@"com.apple.Preview"];
+    if([running count] > 0){
+        score++;
+    }
+    
+    running = [NSRunningApplication runningApplicationsWithBundleIdentifier:@"org.vim.MacVim"];
+    if([running count] > 0){
+        score++;
+    }
+    running =
+        [NSRunningApplication runningApplicationsWithBundleIdentifier:@"com.mindnode.MindNodePro"];
+    if([running count] > 0){
+        score+=2;
+    }
+    
+    [self choiseMaker:score];
+}
+
+-(void) choiseMaker:(NSInteger)score {
+
+    if (score > 3 && [self isSystemIdle] == NO){
+        _isTOS = YES;
+        [self tosTimer];
         
     } else {
-         [_statusItem setTitle:@"NOT"];
+        _isTOS = NO;
+        if([self isSystemIdle]) {
+            [self idleTimer];
+        } else {
+            [self notTimer];
+        }
     }
-
+    
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
     self.statusItem=[[NSStatusBar systemStatusBar] statusItemWithLength:NSVariableStatusItemLength];
-    [_statusItem setTitle:[NSString stringWithFormat:@"tos"]];
-
+    
+    _tosMenu = [[NSMenu alloc] initWithTitle:@"TOS"];
+    
+    [_tosMenu setTitle:@"TOS"];
+    
+    _tosMI = [[NSMenuItem alloc] init];
+    _idleMI = [[NSMenuItem alloc] init];
+    _notMI = [[NSMenuItem alloc] init];
+    [_tosMI setTitle:@"TOS"];
+    [_notMI setTitle:@"NOT"];
+    [_idleMI setTitle:@"IDLE"];
+    [_tosMenu insertItem:_tosMI atIndex:0];
+    [_tosMenu insertItem:_idleMI atIndex:1];
+    [_tosMenu insertItem:_notMI atIndex:2];
+    
+    
+    
+    
+    [_statusItem setTitle:@"tos"];
+    [_statusItem setEnabled:YES];
+    [_statusItem setHighlightMode:YES];
+    [_statusItem setMenu:_tosMenu];
     
     _tos = 0;
-    _idleTimes = 0;
+    _idleT = 0;
+    _notT = 0;
     
     
     _startTime = [NSDate date];
@@ -137,22 +173,57 @@
     _isTOS = NO;
     
     // do stuff...
-
+    
     [self lookApplicationsScore];
     [self startTOS];
+    [self updateTimerTimer];
+    [self setNotifications];
+    
+}
 
+-(void)setNotifications {
+    [[[NSWorkspace sharedWorkspace] notificationCenter]
+     addObserver: self
+     selector: @selector(receiveNote:)
+     name: NSWorkspaceWillSleepNotification object: NULL];
+    
+    [[[NSWorkspace sharedWorkspace] notificationCenter]
+     addObserver: self
+     selector: @selector(receiveNote:)
+     name: NSWorkspaceScreensDidSleepNotification object: NULL];
+    
+    [[[NSWorkspace sharedWorkspace] notificationCenter]
+     addObserver: self
+     selector: @selector(receiveNote:)
+     name: NSWorkspaceDidWakeNotification object: NULL];
+    [[[NSWorkspace sharedWorkspace] notificationCenter]
+     addObserver: self
+     selector: @selector(receiveNote:)
+     name: NSWorkspaceScreensDidWakeNotification object: NULL];
+}
+
+
+-(void)updateTimerTimer {
+    [NSTimer
+     scheduledTimerWithTimeInterval:(REFRESH_MENU)
+     target:self
+     selector:@selector(updateTimer)
+     userInfo:nil
+     repeats:YES];
+}
+
+- (void) receiveNote: (NSNotification*) note
+{
+    NSLog(@"receiveNote: %@", [note name]);
 }
 
 -(void)startTOS {
-    NSTimeInterval update;
-    update = UPDATE;
     [NSTimer
-     scheduledTimerWithTimeInterval:(update)
+     scheduledTimerWithTimeInterval:(UPDATE)
      target:self
      selector:@selector(lookApplicationsScore)
      userInfo:nil
      repeats:YES];
-    
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
