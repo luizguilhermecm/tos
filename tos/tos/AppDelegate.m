@@ -12,6 +12,7 @@
 #import "AppDelegate.h"
 #import "TOSLog.h"
 #import "defines.h"
+#import "CardManager.h"
 
 @interface AppDelegate ()
 
@@ -20,8 +21,6 @@
 
 @property NSTimeInterval newInterval;
 @property NSDate * startInterval;
-
-@property NSMutableDictionary * notApp;
 
 @property NSTimeInterval tos;
 @property NSTimeInterval idleT;
@@ -64,7 +63,7 @@
     NSInteger seconds = ti % 60;
     NSInteger minutes = (ti / 60) % 60;
     NSInteger hours = (ti / 3600);
-    return [NSString stringWithFormat:@"%@: %02ld:%02ld:%02ld", astatus, (long)hours, (long)minutes, (long)seconds];
+    return [NSString stringWithFormat:@"%@ %02ld:%02ld:%02ld", astatus, (long)hours, (long)minutes, (long)seconds];
 }
 
 
@@ -74,20 +73,9 @@
 
 -(void)updateSubMenuTimer {
         
-        [_idleMI setTitle:[self formatTos:_idleT status:@"IDLE"]];
-        [_tosMI setTitle:[self formatTos:_tos status:@"TOS"]];
-        [_notMI setTitle:[self formatTos:_notT status:@"NOT"]];
-}
-
--(void)updateSubMenuItemTimer {
-    NSArray *items = [_notSubmenu itemArray];
-    for (NSMenuItem *item in items) {
-        
-        NSTimeInterval t = [_notApp[[item toolTip]] integerValue];
-
-        NSString * newTitle = [self formatTos:t status:[item toolTip]];
-        [item setTitle:newTitle];
-    }
+        [_idleMI setTitle:[self formatTos:_idleT status:@"IDLE:"]];
+        [_tosMI setTitle:[self formatTos:_tos status:@"TOS:"]];
+        [_notMI setTitle:[self formatTos:_notT status:@"NOT:"]];
 }
 
 -(void)updateMenuTitle {
@@ -229,23 +217,10 @@
     
     _frontApp = [[NSWorkspace sharedWorkspace] frontmostApplication];
     NSString * fapp = _frontApp.localizedName;
-
+    
     if (self.getStatus == NOT_STATUS) {
-        
-        NSInteger tag;
-        tag = [_notSubmenu numberOfItems];
-        NSNumber * index = [_notApp objectForKey:fapp];
-
-        if (index == nil) {
-            NSMenuItem * novo = [_notSubmenu insertItemWithTitle:fapp action:nil keyEquivalent:@"" atIndex:0];
-            [novo setToolTip:fapp];
-            [novo setTag:tag];
-            [_notApp setObject:[NSNumber numberWithInt:0] forKey:fapp];
-             
-        } else {
-            NSInteger count = [_notApp[fapp] integerValue];
-            count += UPDATE;
-            _notApp[fapp] = [NSNumber numberWithInteger:count];
+        if ([_notSubmenu indexOfItemWithTitle:fapp] == -1) {
+            [_notSubmenu insertItemWithTitle:fapp action:nil keyEquivalent:@"" atIndex:0];
         }
     } else if (self.getStatus == IDLE_STATUS) {
             if ([_idleSubmenu indexOfItemWithTitle:fapp] == -1) {
@@ -257,7 +232,10 @@
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
-
+    
+    CardManager * tc = [[CardManager alloc] init];
+    [tc teste];
+    
     self.statusItem=[[NSStatusBar systemStatusBar] statusItemWithLength:NSVariableStatusItemLength];
     
     _log = [[TOSLog alloc] init];
@@ -293,7 +271,6 @@
     _idleT = 0;
     _notT = 0;
     
-    _notApp =  [[NSMutableDictionary alloc] init];
     
     // do stuff...
     [self writeToLogFile:@"tos-started"];
@@ -303,7 +280,7 @@
 
 //    [[NSRunLoop currentRunLoop] performSelector:@selector(updateTheMenu:) target:self argument:_tosMenu order:0 modes:[NSArray arrayWithObject:NSRunLoopCommonModes]];
 
-    
+
 
 }
 - (void)updateTheMenu:(NSMenu*)menu
@@ -315,7 +292,6 @@
 }
 -(IBAction) updateMenu :(id)sender {
     [self setNewIntervalToStatus];
-    [self updateSubMenuItemTimer];
 }
 
 

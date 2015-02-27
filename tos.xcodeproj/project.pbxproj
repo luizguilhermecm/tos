@@ -12,6 +12,7 @@
 		9BB30A4A1A9C0D4D006EB245 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9BB30A491A9C0D4D006EB245 /* Images.xcassets */; };
 		9BB30A4D1A9C0D4D006EB245 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BB30A4B1A9C0D4D006EB245 /* MainMenu.xib */; };
 		9BB30A591A9C0D4D006EB245 /* tosTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB30A581A9C0D4D006EB245 /* tosTests.m */; };
+		9BB3CD551A9FBF1F009803C6 /* TOSLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB3CD541A9FBF1F009803C6 /* TOSLog.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -35,6 +36,9 @@
 		9BB30A521A9C0D4D006EB245 /* tosTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = tosTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9BB30A571A9C0D4D006EB245 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9BB30A581A9C0D4D006EB245 /* tosTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = tosTests.m; sourceTree = "<group>"; };
+		9BB3CD531A9FBF1F009803C6 /* TOSLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOSLog.h; sourceTree = "<group>"; };
+		9BB3CD541A9FBF1F009803C6 /* TOSLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOSLog.m; sourceTree = "<group>"; };
+		9BB3CD561A9FED61009803C6 /* defines.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = defines.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,6 +85,9 @@
 				9BB30A491A9C0D4D006EB245 /* Images.xcassets */,
 				9BB30A4B1A9C0D4D006EB245 /* MainMenu.xib */,
 				9BB30A421A9C0D4D006EB245 /* Supporting Files */,
+				9BB3CD531A9FBF1F009803C6 /* TOSLog.h */,
+				9BB3CD541A9FBF1F009803C6 /* TOSLog.m */,
+				9BB3CD561A9FED61009803C6 /* defines.h */,
 			);
 			path = tos;
 			sourceTree = "<group>";
@@ -211,6 +218,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9BB30A481A9C0D4D006EB245 /* AppDelegate.m in Sources */,
+				9BB3CD551A9FBF1F009803C6 /* TOSLog.m in Sources */,
 				9BB30A451A9C0D4D006EB245 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
