@@ -13,6 +13,8 @@
 		9BB30A4D1A9C0D4D006EB245 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BB30A4B1A9C0D4D006EB245 /* MainMenu.xib */; };
 		9BB30A591A9C0D4D006EB245 /* tosTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB30A581A9C0D4D006EB245 /* tosTests.m */; };
 		9BB3CD551A9FBF1F009803C6 /* TOSLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB3CD541A9FBF1F009803C6 /* TOSLog.m */; };
+		9BE2FEF91AA06FA400E02FD1 /* transparent.png in Resources */ = {isa = PBXBuildFile; fileRef = 9BE2FEF81AA06FA400E02FD1 /* transparent.png */; };
+		9BE2FEFC1AA070AC00E02FD1 /* TrueCard.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BE2FEFB1AA070AC00E02FD1 /* TrueCard.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -39,6 +41,9 @@
 		9BB3CD531A9FBF1F009803C6 /* TOSLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOSLog.h; sourceTree = "<group>"; };
 		9BB3CD541A9FBF1F009803C6 /* TOSLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOSLog.m; sourceTree = "<group>"; };
 		9BB3CD561A9FED61009803C6 /* defines.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = defines.h; sourceTree = "<group>"; };
+		9BE2FEF81AA06FA400E02FD1 /* transparent.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = transparent.png; sourceTree = "<group>"; };
+		9BE2FEFA1AA070AC00E02FD1 /* TrueCard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TrueCard.h; sourceTree = "<group>"; };
+		9BE2FEFB1AA070AC00E02FD1 /* TrueCard.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TrueCard.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -80,6 +85,7 @@
 		9BB30A411A9C0D4D006EB245 /* tos */ = {
 			isa = PBXGroup;
 			children = (
+				9BE2FEF81AA06FA400E02FD1 /* transparent.png */,
 				9BB30A461A9C0D4D006EB245 /* AppDelegate.h */,
 				9BB30A471A9C0D4D006EB245 /* AppDelegate.m */,
 				9BB30A491A9C0D4D006EB245 /* Images.xcassets */,
@@ -88,6 +94,8 @@
 				9BB3CD531A9FBF1F009803C6 /* TOSLog.h */,
 				9BB3CD541A9FBF1F009803C6 /* TOSLog.m */,
 				9BB3CD561A9FED61009803C6 /* defines.h */,
+				9BE2FEFA1AA070AC00E02FD1 /* TrueCard.h */,
+				9BE2FEFB1AA070AC00E02FD1 /* TrueCard.m */,
 			);
 			path = tos;
 			sourceTree = "<group>";
@@ -198,6 +206,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9BE2FEF91AA06FA400E02FD1 /* transparent.png in Resources */,
 				9BB30A4A1A9C0D4D006EB245 /* Images.xcassets in Resources */,
 				9BB30A4D1A9C0D4D006EB245 /* MainMenu.xib in Resources */,
 			);
@@ -220,6 +229,7 @@
 				9BB30A481A9C0D4D006EB245 /* AppDelegate.m in Sources */,
 				9BB3CD551A9FBF1F009803C6 /* TOSLog.m in Sources */,
 				9BB30A451A9C0D4D006EB245 /* main.m in Sources */,
+				9BE2FEFC1AA070AC00E02FD1 /* TrueCard.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

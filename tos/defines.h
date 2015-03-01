@@ -13,5 +13,6 @@
 #define TOS_STATUS 2
 #define IDLE_STATUS 1
 #define NOT_STATUS 0
-
+#define SLEEP_STATUS 8
+#define WAKE_STATUS 7
 #endif

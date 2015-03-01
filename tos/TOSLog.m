@@ -18,7 +18,12 @@
             return @"NOT :";
     } else if (status == IDLE_STATUS) {
             return @"IDLE:";
+    } else if (status == SLEEP_STATUS) {
+        return @"SLEEP:";
+    } else if (status == WAKE_STATUS) {
+        return @"WAKE:";
     }
+
     return @"ERROR:";
 }
 

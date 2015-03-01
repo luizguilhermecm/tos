@@ -12,6 +12,7 @@
 #import "AppDelegate.h"
 #import "TOSLog.h"
 #import "defines.h"
+#import "TrueCard.h"
 
 @interface AppDelegate ()
 
@@ -32,6 +33,8 @@
 
 @property (strong) IBOutlet NSMenu * tosMenu;
 @property (strong) IBOutlet NSMenuItem * tosUpdateMI;
+@property (strong) IBOutlet NSMenuItem * tosActualMI;
+
 
 @property (strong) IBOutlet NSMenuItem * idleMI;
 @property (strong) IBOutlet NSMenu * idleSubmenu;
@@ -53,6 +56,8 @@
 
 @property BOOL isIdle;
 @property BOOL isTOS;
+
+@property TrueCard * tc;
 
 @end
 
@@ -80,6 +85,9 @@
 }
 
 -(void)updateSubMenuItemTimer {
+    
+    [_tosActualMI setTitle:[self getNewIntervalFromDateFormated]];
+    
     NSArray *items = [_notSubmenu itemArray];
     for (NSMenuItem *item in items) {
         
@@ -113,6 +121,10 @@
     _notT += interval;
 }
 
+-(NSString *)getNewIntervalFromDateFormated {
+    NSTimeInterval interval = [self getNewIntervalFromDate];
+    return [self formatTos:interval status:@"Update"];
+}
 
 -(NSTimeInterval)getNewIntervalFromDate {
     return [_startInterval timeIntervalSinceNow] * -1;
@@ -136,6 +148,19 @@
 }
 
 -(void)updateStatus:(NSInteger)status {
+    
+    if (_statusNow == NOT_STATUS) {
+        if (status != NOT_STATUS) {
+            [_tc invalidateTrueCardTimer];
+        }
+    } else {
+        if (status == NOT_STATUS) {
+            _tc = [[TrueCard alloc] init];
+            [_tc setTrueCardTimer];
+        }
+    }
+    
+    
     if (_statusNow == status) {
         
         // do nothingj=
@@ -265,6 +290,8 @@
 
 
     _tosUpdateMI = [[NSMenuItem alloc] initWithTitle:@"update" action:@selector(updateMenu:) keyEquivalent:@"r"];
+    _tosActualMI = [[NSMenuItem alloc] initWithTitle:@"timer: " action:nil keyEquivalent:@""];
+    
     _tosMI = [[NSMenuItem alloc] initWithTitle:@"TOS" action:nil keyEquivalent:@""];
     _notMI = [[NSMenuItem alloc] initWithTitle:@"NOT" action:nil keyEquivalent:@""];
     _idleMI = [[NSMenuItem alloc] initWithTitle:@"IDLE" action:nil keyEquivalent:@""];
@@ -277,6 +304,7 @@
     [_tosMenu insertItem:_tosMI atIndex:1];
     [_tosMenu insertItem:_idleMI atIndex:2];
     [_tosMenu insertItem:_notMI atIndex:3];
+    [_tosMenu insertItem:_tosActualMI atIndex:4];
     
     [_tosMI setSubmenu:_tosSubmenu];
     [_notMI setSubmenu:_notSubmenu];
@@ -296,88 +324,46 @@
     _notApp =  [[NSMutableDictionary alloc] init];
     
     // do stuff...
-    [self writeToLogFile:@"tos-started"];
+    
     [self startTOS];
-
-
-
-//    [[NSRunLoop currentRunLoop] performSelector:@selector(updateTheMenu:) target:self argument:_tosMenu order:0 modes:[NSArray arrayWithObject:NSRunLoopCommonModes]];
-
-    
-
 }
-- (void)updateTheMenu:(NSMenu*)menu
-{
- //   [menu addItemWithTitle:@"Foobar" action:NULL keyEquivalent:@""];
-    [menu update];
-    NSLog(@"teste");
 
-}
 -(IBAction) updateMenu :(id)sender {
-    [self setNewIntervalToStatus];
+//    [self setNewIntervalToStatus];
     [self updateSubMenuItemTimer];
-}
-
-
-
--(void) writeToLogFile:(NSString*)content{
-    
-    content = [NSString stringWithFormat:@"%@ : %@\n",[NSDate date], content];
-    
-    //get the documents directory:
-    NSString *documentsDirectory = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
-    NSString *fileName = [documentsDirectory stringByAppendingPathComponent:@"_log-tos.txt"];
-    
-    NSFileHandle *fileHandle = [NSFileHandle fileHandleForWritingAtPath:fileName];
-    if (fileHandle){
-        [fileHandle seekToEndOfFile];
-        [fileHandle writeData:[content dataUsingEncoding:NSUTF8StringEncoding]];
-        [fileHandle closeFile];
-    }
-    else{
-        [content writeToFile:fileName
-                  atomically:NO
-                    encoding:NSStringEncodingConversionAllowLossy
-                       error:nil];
-    }
 }
 
 -(void)setNotifications {
     [[[NSWorkspace sharedWorkspace] notificationCenter]
      addObserver: self
-     selector: @selector(receiveNote:)
+     selector: @selector(sleepNote:)
      name: NSWorkspaceWillSleepNotification object: NULL];
     
     [[[NSWorkspace sharedWorkspace] notificationCenter]
      addObserver: self
-     selector: @selector(receiveNote:)
+     selector: @selector(sleepNote:)
      name: NSWorkspaceScreensDidSleepNotification object: NULL];
     
     [[[NSWorkspace sharedWorkspace] notificationCenter]
      addObserver: self
-     selector: @selector(receiveNote:)
+     selector: @selector(wakeNote:)
      name: NSWorkspaceDidWakeNotification object: NULL];
+    
     [[[NSWorkspace sharedWorkspace] notificationCenter]
      addObserver: self
-     selector: @selector(receiveNote:)
+     selector: @selector(wakeNote:)
      name: NSWorkspaceScreensDidWakeNotification object: NULL];
 }
 
-/*
--(void)updateTimerTimer {
-    [NSTimer
-     scheduledTimerWithTimeInterval:(REFRESH_MENU)
-     target:self
-     selector:@selector(updateTimer)
-     userInfo:nil
-     repeats:YES];
-}
- */
-
-- (void) receiveNote: (NSNotification*) note
+- (void) sleepNote: (NSNotification*) note
 {
-    NSLog(@"receiveNote: %@", [note name]);
+    [_log LogInterval:0 status:SLEEP_STATUS];
 }
+- (void) wakeNote: (NSNotification*) note
+{
+    [_log LogInterval:0 status:WAKE_STATUS];
+}
+
 
 -(void)startTOS {
     
@@ -392,6 +378,8 @@
      selector:@selector(tosLoop)
      userInfo:nil
      repeats:YES];
+    
+
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
