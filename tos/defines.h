@@ -14,9 +14,13 @@
 #define TOS_STATUS 2
 #define IDLE_STATUS 1
 #define NOT_STATUS 0
+
 #define SLEEP_STATUS 8
 #define WAKE_STATUS 7
 #define QUIT_TOS 6
+
+#define FORCED_NOT 99
+#define PEACE 12
 
 #define UPDATE 5
 #define IDLE_MAX 60

@@ -23,4 +23,6 @@
 
 +(NSString*) safariURL;
 
++(void)showAlert:(NSString *)title  text:(NSString *) atext;
+
 @end

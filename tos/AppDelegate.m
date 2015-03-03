@@ -57,7 +57,10 @@
 @property (strong) NSTimer * notificationTimer;
 
 @property NSInteger statusNow;
+@property NSInteger forcedStatus;
+@property NSString * reasonOfNot;
 
+@property NSDate * lastTimeInFront;
 @property TOSLog * log;
 
 @property BOOL isIdle;
@@ -78,6 +81,7 @@
 @synthesize score;
 
 @synthesize statusNow;
+@synthesize forcedStatus;
 
 -(void)updateSubMenuTimer {
         [_idleMI setTitle:[Utils formatTos:idleT status:@"IDLE"]];
@@ -106,6 +110,8 @@
         [_statusItem setTitle:@"TOS"];
     } else if (statusNow == NOT_STATUS) {
         [_statusItem setTitle:@"NOT"];
+    } else if (statusNow == FORCED_NOT) {
+        [_statusItem setTitle:@"!NOT!"];
     }
 }
 
@@ -140,7 +146,7 @@
     } else if (statusNow == IDLE_STATUS) {
         [self idleTimer:interval];
         
-    } else if (statusNow == NOT_STATUS) {
+    } else if (statusNow == NOT_STATUS || statusNow == FORCED_NOT) {
         [self notTimer:interval];
         
     }
@@ -148,19 +154,7 @@
 }
 
 -(void)updateStatus:(NSInteger)status {
-    
-    if (statusNow == NOT_STATUS) {
-        if (status != NOT_STATUS) {
-//            [_tc invalidateTrueCardTimer];
-        }
-    } else {
-        if (status == NOT_STATUS) {
-  //          _tc = [[TrueCard alloc] init];
- //           [_tc setTrueCardTimer];
-        }
-    }
-    
-    
+
     if (statusNow == status) {
         
         // do nothingj=
@@ -175,15 +169,38 @@
 }
 
 
+
+-(BOOL) checkSpecificApp :(NSString *) app{
+    if ([Utils isAppOpen:app] == 1)
+        return YES;
+    else
+        return NO;
+}
+
+-(void)checkMindMap {
+    NSRunningApplication *_frontApp = [[NSWorkspace sharedWorkspace] frontmostApplication];
+    if ([_frontApp.bundleIdentifier isEqualToString:@"com.mindnode.MindNodePro"]) {
+        _lastTimeInFront = [NSDate date];
+    } else {
+        NSTimeInterval since = [_lastTimeInFront timeIntervalSinceNow];
+        since *= -1;
+        if (since > 300) {
+            [self updateStatus:FORCED_NOT];
+            [Utils showAlert:@"MindNode Pro" text:@"Setando NOT"];
+            _reasonOfNot = @"com.mindnode.MindNodePro";
+
+        }
+    }
+}
+
 // work flow when status is TOS
 -(void)tosStatusWF {
-    
+    [self checkMindMap];
 }
 
 // work flow when status is NOT
 -(void)notStatusWF {
     [self getFrontAppWithNot];
-    
 }
 
 // work flow when status is IDLE
@@ -197,9 +214,13 @@
         [self updateStatus:IDLE_STATUS];
         [self idleStatusWF];
         
+    } else if (statusNow == FORCED_NOT) {
+        if ([self checkSpecificApp:_reasonOfNot] == NO) {
+            _reasonOfNot = @"";
+            [self getApplicationsScore];
+        }
     } else {
         [self getApplicationsScore];
-        [self choiseMaker];
     }
 }
 
@@ -211,10 +232,22 @@
     score += [Utils isAppOpen:@"org.vim.MacVim"];
     score += [Utils isAppOpen:@"com.mindnode.MindNodePro"];
     
+
+    if ([self checkSpecificApp:@"com.apple.dt.Xcode"]) {
+        score = -1;
+        [self updateStatus:FORCED_NOT];
+
+        [Utils showAlert:@"Xcode" text:@"Setando NOT"];
+        _reasonOfNot = @"com.apple.dt.Xcode";
+    }
+    
     if ([Utils isAppOpen:@"com.apple.Safari"] == 1) {
         // decidir o que fazer qndo o safari estiver aberto
         //[Utils safariURL];
     }
+    
+    [self choiseMaker];
+
 }
 
 
@@ -222,11 +255,10 @@
 -(void) choiseMaker {
 
     if (score >= 3){
-        
         [self updateStatus:TOS_STATUS];
         [self tosStatusWF];
         
-    } else {
+    } else if (score >=0) {
         
         [self updateStatus:NOT_STATUS];
         [self notStatusWF];
@@ -308,6 +340,7 @@
     tos = 0;
     idleT = 0;
     notT = 0;
+    forcedStatus = PEACE;
     
     _notApp =  [[NSMutableDictionary alloc] init];
     

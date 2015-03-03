@@ -20,8 +20,18 @@
     return [NSString stringWithFormat:@"%@: %02ld:%02ld:%02ld", astatus, (long)hours, (long)minutes, (long)seconds];
 }
 
++(void) runningApps {
+    NSArray * running = [[NSWorkspace sharedWorkspace] runningApplications];
+
+    for (NSRunningApplication * app in running) {
+//        [array addObject:app.bundleIdentifier];
+        NSLog(app.bundleIdentifier);
+    }
+}
+
 +(NSInteger) isAppOpen:(NSString *)thisApp {
     NSArray * running = [NSRunningApplication runningApplicationsWithBundleIdentifier:thisApp];
+//    [self runningApps];
     if([running count] > 0){
         return 1;
     } else {
@@ -55,6 +65,16 @@
         return [result stringValue];
     }
     return nil;
+}
+
++(void)showAlert:(NSString *)title  text:(NSString *) atext {
+    NSAlert *alert = [[NSAlert alloc] init];
+    NSWindow *window;
+    [alert addButtonWithTitle:@"OK"];
+    [alert setMessageText:title];
+    [alert setInformativeText:atext];
+    [alert setAlertStyle:NSCriticalAlertStyle];
+    [alert beginSheetModalForWindow:window modalDelegate:self didEndSelector:nil contextInfo:nil];
 }
 
 
