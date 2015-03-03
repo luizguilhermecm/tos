@@ -6,17 +6,20 @@
 //  Copyright (c) 2015 snk. All rights reserved.
 //
 
-#define UPDATE 5
-#define IDLE_MAX 60
+
 
 #import "AppDelegate.h"
 #import "TOSLog.h"
 #import "defines.h"
 #import "TrueCard.h"
+#import "CDManager.h"
+#import "NotificationCard.h"
+#import "Utils.h"
+
 
 @interface AppDelegate ()
 
-@property (weak) IBOutlet NSWindow *window;
+@property (strong) IBOutlet NSWindow *window;
 @property (strong, nonatomic) NSStatusItem *statusItem;
 
 @property NSTimeInterval newInterval;
@@ -34,6 +37,11 @@
 @property (strong) IBOutlet NSMenu * tosMenu;
 @property (strong) IBOutlet NSMenuItem * tosUpdateMI;
 @property (strong) IBOutlet NSMenuItem * tosActualMI;
+@property (strong) IBOutlet NSMenu * toolSubmenu;
+@property (strong) IBOutlet NSMenuItem * quitMI;
+@property (strong) IBOutlet NSMenuItem * resetMI;
+@property (strong) IBOutlet NSMenuItem * notificationStartMI;
+@property (strong) IBOutlet NSMenuItem * notificationStopMI;
 
 
 @property (strong) IBOutlet NSMenuItem * idleMI;
@@ -45,10 +53,8 @@
 @property (strong) IBOutlet NSMenuItem * notMI;
 @property (strong) IBOutlet NSMenu * notSubmenu;
 
-@property(readonly, strong) NSRunningApplication *frontApp;
-
-
 @property(readonly, strong) NSNotificationCenter *notificationCenter;
+@property (strong) NSTimer * notificationTimer;
 
 @property NSInteger statusNow;
 
@@ -56,74 +62,69 @@
 
 @property BOOL isIdle;
 @property BOOL isTOS;
+@property NSInteger score;
 
-@property TrueCard * tc;
+//@property TrueCard * tc;
 
 @end
 
 @implementation AppDelegate
 
+@synthesize isIdle;
+@synthesize isTOS;
+@synthesize tos;
+@synthesize idleT;
+@synthesize notT;
+@synthesize score;
 
--(NSString *)formatTos:(NSTimeInterval)interval status:(NSString*)astatus{
-    NSInteger ti = (NSInteger)interval;
-    NSInteger seconds = ti % 60;
-    NSInteger minutes = (ti / 60) % 60;
-    NSInteger hours = (ti / 3600);
-    return [NSString stringWithFormat:@"%@: %02ld:%02ld:%02ld", astatus, (long)hours, (long)minutes, (long)seconds];
-}
-
-
--(NSInteger) getStatus {
-    return _statusNow;
-}
+@synthesize statusNow;
 
 -(void)updateSubMenuTimer {
-        
-        [_idleMI setTitle:[self formatTos:_idleT status:@"IDLE"]];
-        [_tosMI setTitle:[self formatTos:_tos status:@"TOS"]];
-        [_notMI setTitle:[self formatTos:_notT status:@"NOT"]];
+        [_idleMI setTitle:[Utils formatTos:idleT status:@"IDLE"]];
+        [_tosMI setTitle:[Utils formatTos:tos status:@"TOS"]];
+        [_notMI setTitle:[Utils formatTos:notT status:@"NOT"]];
 }
 
+
+// atualiza o tempo dos aplicativos no submenu NOT
 -(void)updateSubMenuItemTimer {
     
     [_tosActualMI setTitle:[self getNewIntervalFromDateFormated]];
     
     NSArray *items = [_notSubmenu itemArray];
     for (NSMenuItem *item in items) {
-        
         NSTimeInterval t = [_notApp[[item toolTip]] integerValue];
-
-        NSString * newTitle = [self formatTos:t status:[item toolTip]];
+        NSString * newTitle = [Utils formatTos:t status:[item toolTip]];
         [item setTitle:newTitle];
     }
 }
 
 -(void)updateMenuTitle {
-    if (self.getStatus == IDLE_STATUS) {
+    if (statusNow == IDLE_STATUS) {
         [_statusItem setTitle:@"IDLE"];
-    } else if (self.getStatus == TOS_STATUS) {
+    } else if (statusNow == TOS_STATUS) {
         [_statusItem setTitle:@"TOS"];
-    } else if (self.getStatus == NOT_STATUS) {
+    } else if (statusNow == NOT_STATUS) {
         [_statusItem setTitle:@"NOT"];
     }
 }
 
 
 -(void)idleTimer:(NSTimeInterval)interval {
-    _idleT += interval;
+    idleT += interval;
 }
 
 -(void)tosTimer :(NSTimeInterval)interval{
-    _tos += interval;
+    tos += interval;
 }
 
 -(void)notTimer :(NSTimeInterval)interval{
-    _notT += interval;
+    notT += interval;
 }
 
 -(NSString *)getNewIntervalFromDateFormated {
     NSTimeInterval interval = [self getNewIntervalFromDate];
-    return [self formatTos:interval status:@"Update"];
+    return [Utils formatTos:interval status:@"Now"];
 }
 
 -(NSTimeInterval)getNewIntervalFromDate {
@@ -132,113 +133,95 @@
 
 -(void)setNewIntervalToStatus {
     NSTimeInterval interval = [self getNewIntervalFromDate];
-    [_log LogInterval:interval status:_statusNow];
-
     
-    if ([self getStatus] == TOS_STATUS) {
+    if (statusNow == TOS_STATUS) {
         [self tosTimer:interval];
-    } else if ([self getStatus] == IDLE_STATUS) {
+        
+    } else if (statusNow == IDLE_STATUS) {
         [self idleTimer:interval];
-    } else if ([self getStatus] == NOT_STATUS) {
+        
+    } else if (statusNow == NOT_STATUS) {
         [self notTimer:interval];
+        
     }
     _startInterval = [NSDate date];
-    
-    [self updateSubMenuTimer];
 }
 
 -(void)updateStatus:(NSInteger)status {
     
-    if (_statusNow == NOT_STATUS) {
+    if (statusNow == NOT_STATUS) {
         if (status != NOT_STATUS) {
-            [_tc invalidateTrueCardTimer];
+//            [_tc invalidateTrueCardTimer];
         }
     } else {
         if (status == NOT_STATUS) {
-            _tc = [[TrueCard alloc] init];
-            [_tc setTrueCardTimer];
+  //          _tc = [[TrueCard alloc] init];
+ //           [_tc setTrueCardTimer];
         }
     }
     
     
-    if (_statusNow == status) {
+    if (statusNow == status) {
         
         // do nothingj=
     } else {
+        [_log LogInterval:[self getNewIntervalFromDate] status:statusNow];
         
         [self setNewIntervalToStatus];
-
-        _statusNow = status;
+        [self updateSubMenuTimer];
+        statusNow = status;
         [self updateMenuTitle];
-        
     }
 }
 
-- (BOOL)isSystemIdle
-{
-    CFTimeInterval timeSinceLastEvent = CGEventSourceSecondsSinceLastEventType(kCGEventSourceStateHIDSystemState, kCGAnyInputEventType);
-    
-    if (timeSinceLastEvent > IDLE_MAX) {
-        [self updateStatus:IDLE_STATUS];
-        return YES;
-    } else {
-        return NO;
-    }
-}
 
+// work flow when status is TOS
 -(void)tosStatusWF {
     
 }
 
+// work flow when status is NOT
 -(void)notStatusWF {
-    [self getFrontApp];
+    [self getFrontAppWithNot];
     
 }
 
+// work flow when status is IDLE
 -(void)idleStatusWF {
-     [self getFrontApp];
+//     [self getFrontApp];
 }
 
 -(void)tosLoop {
-    if ([self isSystemIdle]) {
-        
+    if ([Utils isSystemIdle]) {
+
+        [self updateStatus:IDLE_STATUS];
         [self idleStatusWF];
         
     } else {
-        [self lookApplicationsScore];
+        [self getApplicationsScore];
+        [self choiseMaker];
     }
 }
 
--(void)lookApplicationsScore{
-    int score = 0;
-
-    NSArray * running;
-    running = [NSRunningApplication runningApplicationsWithBundleIdentifier:@"com.apple.TextEdit"];
-    if([running count] > 0){
-        score++;
-    }
+-(void)getApplicationsScore{
     
-    running = [NSRunningApplication runningApplicationsWithBundleIdentifier:@"com.apple.Preview"];
-    if([running count] > 0){
-        score++;
-    }
+    score = 0;
+    score += [Utils isAppOpen:@"com.apple.TextEdit"];
+    score += [Utils isAppOpen:@"com.apple.Preview"];
+    score += [Utils isAppOpen:@"org.vim.MacVim"];
+    score += [Utils isAppOpen:@"com.mindnode.MindNodePro"];
     
-    running = [NSRunningApplication runningApplicationsWithBundleIdentifier:@"org.vim.MacVim"];
-    if([running count] > 0){
-        score++;
+    if ([Utils isAppOpen:@"com.apple.Safari"] == 1) {
+        // decidir o que fazer qndo o safari estiver aberto
+        //[Utils safariURL];
     }
-    running =
-        [NSRunningApplication runningApplicationsWithBundleIdentifier:@"com.mindnode.MindNodePro"];
-    if([running count] > 0){
-        score+=2;
-    }
-    
-    [self choiseMaker:score];
 }
 
--(void) choiseMaker:(NSInteger)score {
 
-    if (score > 3){
+
+-(void) choiseMaker {
+
+    if (score >= 3){
         
         [self updateStatus:TOS_STATUS];
         [self tosStatusWF];
@@ -250,38 +233,30 @@
     }
 }
 
--(void)getFrontApp {
+-(void)getFrontAppWithNot {
     
-    _frontApp = [[NSWorkspace sharedWorkspace] frontmostApplication];
-    NSString * fapp = _frontApp.localizedName;
-
-    if (self.getStatus == NOT_STATUS) {
-        
-        NSInteger tag;
-        tag = [_notSubmenu numberOfItems];
-        NSNumber * index = [_notApp objectForKey:fapp];
-
-        if (index == nil) {
-            NSMenuItem * novo = [_notSubmenu insertItemWithTitle:fapp action:nil keyEquivalent:@"" atIndex:0];
-            [novo setToolTip:fapp];
-            [novo setTag:tag];
-            [_notApp setObject:[NSNumber numberWithInt:0] forKey:fapp];
-             
-        } else {
-            NSInteger count = [_notApp[fapp] integerValue];
-            count += UPDATE;
-            _notApp[fapp] = [NSNumber numberWithInteger:count];
-        }
-    } else if (self.getStatus == IDLE_STATUS) {
-            if ([_idleSubmenu indexOfItemWithTitle:fapp] == -1) {
-                [_idleSubmenu insertItemWithTitle:fapp action:nil keyEquivalent:@"" atIndex:0];
-            }
+    NSRunningApplication *_frontApp = [[NSWorkspace sharedWorkspace] frontmostApplication];
+    NSString *fapp = _frontApp.localizedName;
+    NSInteger tag = [_notSubmenu numberOfItems];
+    
+    NSNumber *index = [_notApp objectForKey:fapp];
+    
+    // index == nil means it isn't in the NOT list in Menu.
+    if (index == nil) {
+        NSMenuItem * novo = [_notSubmenu insertItemWithTitle:fapp action:nil keyEquivalent:@"" atIndex:0];
+        [novo setToolTip:fapp];
+        [novo setTag:tag];
+        [_notApp setObject:[NSNumber numberWithInt:0] forKey:fapp];
+    } else {
+        // if the app is in the list, then increase the count (timer)
+        NSInteger count = [_notApp[fapp] integerValue];
+        count += UPDATE;
+        _notApp[fapp] = [NSNumber numberWithInteger:count];
     }
-    
-   
 }
 
-- (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
+
+-(void)applicationDidFinishLaunching:(NSNotification *)aNotification {
 
     self.statusItem=[[NSStatusBar systemStatusBar] statusItemWithLength:NSVariableStatusItemLength];
     
@@ -291,6 +266,10 @@
 
     _tosUpdateMI = [[NSMenuItem alloc] initWithTitle:@"update" action:@selector(updateMenu:) keyEquivalent:@"r"];
     _tosActualMI = [[NSMenuItem alloc] initWithTitle:@"timer: " action:nil keyEquivalent:@""];
+    _quitMI = [[NSMenuItem alloc] initWithTitle:@"Quit" action:@selector(quitTOS:) keyEquivalent:@"q"];
+    _resetMI = [[NSMenuItem alloc] initWithTitle:@"Reset" action:@selector(resetTOS:) keyEquivalent:@""];
+    _notificationStartMI = [[NSMenuItem alloc] initWithTitle:@"Start TrueCard" action:@selector(notificationStart:) keyEquivalent:@""];
+    _notificationStopMI = [[NSMenuItem alloc] initWithTitle:@"Stop TrueCard" action:@selector(notificationStop:) keyEquivalent:@""];
     
     _tosMI = [[NSMenuItem alloc] initWithTitle:@"TOS" action:nil keyEquivalent:@""];
     _notMI = [[NSMenuItem alloc] initWithTitle:@"NOT" action:nil keyEquivalent:@""];
@@ -299,16 +278,25 @@
     _tosSubmenu = [[NSMenu alloc] initWithTitle:@"subTOS"];
     _idleSubmenu = [[NSMenu alloc] initWithTitle:@"idleNOT"];
     _notSubmenu = [[NSMenu alloc] initWithTitle:@"subNOT"];
-
+    _toolSubmenu = [[NSMenu alloc] initWithTitle:@"tools"];
+    
     [_tosMenu insertItem:_tosUpdateMI atIndex:0];
     [_tosMenu insertItem:_tosMI atIndex:1];
     [_tosMenu insertItem:_idleMI atIndex:2];
     [_tosMenu insertItem:_notMI atIndex:3];
     [_tosMenu insertItem:_tosActualMI atIndex:4];
+
     
     [_tosMI setSubmenu:_tosSubmenu];
     [_notMI setSubmenu:_notSubmenu];
     [_idleMI setSubmenu:_idleSubmenu];
+    [_tosActualMI setSubmenu:_toolSubmenu];
+    
+    [_toolSubmenu insertItem:_notificationStartMI atIndex:0];
+    [_toolSubmenu insertItem:_notificationStopMI atIndex:1];
+    [_toolSubmenu insertItem:_resetMI atIndex:2];
+    [_toolSubmenu insertItem:_quitMI atIndex:3];
+    
     
     [_statusItem setTitle:@"tos"];
     [_statusItem setEnabled:YES];
@@ -317,21 +305,64 @@
     
     [_tosMenu performActionForItemAtIndex:0];
     
-    _tos = 0;
-    _idleT = 0;
-    _notT = 0;
+    tos = 0;
+    idleT = 0;
+    notT = 0;
     
     _notApp =  [[NSMutableDictionary alloc] init];
     
     // do stuff...
     
+    
+    
     [self startTOS];
+
+
+}
+
+-(IBAction) notificationStart :(id)sender {
+    [NotificationCard readFile];
+    
+    [_notificationStartMI setTitle:[NSString stringWithFormat:@"Started %ld cards", NotificationCard.nb]];
+    
+    _notificationTimer = [NSTimer
+     scheduledTimerWithTimeInterval:(60)
+     target:self
+     selector:@selector(callNotification)
+     userInfo:nil
+     repeats:YES];
+}
+-(void) callNotification {
+    [NotificationCard newNotificationCard];
+
+}
+
+-(IBAction) notificationStop :(id)sender {
+    [_notificationTimer invalidate];
+    [_notificationStartMI setTitle:@"Start"];
+}
+
+-(IBAction) resetTOS :(id)sender {
+    tos = 0;
+    idleT = 0;
+    notT = 0;
+    [_notSubmenu removeAllItems];
+    [_notApp removeAllObjects];
+    _startInterval = [NSDate date];
+    [_tosActualMI setTitle:[self getNewIntervalFromDateFormated]];
+}
+
+-(IBAction) quitTOS :(id)sender {
+    [_log LogInterval:[self getNewIntervalFromDate] status:statusNow];
+    [_log LogInterval:0 status:QUIT_TOS];
+    
+    [[NSApplication sharedApplication] terminate:nil];
 }
 
 -(IBAction) updateMenu :(id)sender {
-//    [self setNewIntervalToStatus];
     [self updateSubMenuItemTimer];
 }
+
 
 -(void)setNotifications {
     [[[NSWorkspace sharedWorkspace] notificationCenter]
@@ -355,19 +386,23 @@
      name: NSWorkspaceScreensDidWakeNotification object: NULL];
 }
 
+- (void) notificationReceived: (NSNotification*) note
+{
+    NSLog(@"%@", [note name]);
+}
+
 - (void) sleepNote: (NSNotification*) note
 {
-    [_log LogInterval:0 status:SLEEP_STATUS];
+    [self updateStatus:SLEEP_STATUS];
 }
 - (void) wakeNote: (NSNotification*) note
 {
-    [_log LogInterval:0 status:WAKE_STATUS];
+    [self updateStatus:WAKE_STATUS];
 }
 
 
 -(void)startTOS {
-    
-    _statusNow = IDLE_STATUS;
+    statusNow = IDLE_STATUS;
     _startInterval = [NSDate date];
     [self setNotifications];
     [self tosLoop];
@@ -378,8 +413,6 @@
      selector:@selector(tosLoop)
      userInfo:nil
      repeats:YES];
-    
-
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {

@@ -22,6 +22,8 @@
         return @"SLEEP:";
     } else if (status == WAKE_STATUS) {
         return @"WAKE:";
+    } else if (status == QUIT_TOS) {
+        return @"QUIT:";
     }
 
     return @"ERROR:";

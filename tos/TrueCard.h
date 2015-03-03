@@ -9,10 +9,14 @@
 #import <Foundation/Foundation.h>
 #import <Cocoa/Cocoa.h>
 
-@interface TrueCard : NSObject
-+(void)showSimpleCriticalAlert;
+@interface TrueCard :  NSObject <NSApplicationDelegate>
+
+
 -(void) setTrueCardTimer;
-    -(void) invalidateTrueCardTimer;
+-(void) invalidateTrueCardTimer;
+-(NSInteger) numberOfCards;
+-(void) emptyTable;
+
 
 
 @end

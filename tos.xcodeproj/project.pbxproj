@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9B03DA351AA51D3000DE5D53 /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B03DA341AA51D3000DE5D53 /* Utils.m */; };
+		9B234EC91AA3AB9400408265 /* NotificationCard.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B234EC81AA3AB9400408265 /* NotificationCard.m */; };
+		9B92853F1AA2CAA1009EF4DD /* TrueCards.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 9B92853D1AA2CAA1009EF4DD /* TrueCards.xcdatamodeld */; };
+		9B9285421AA2CC0B009EF4DD /* CDManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B9285411AA2CC0B009EF4DD /* CDManager.m */; };
+		9B9285471AA2DB72009EF4DD /* TOSMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B9285461AA2DB72009EF4DD /* TOSMenu.m */; };
 		9BB30A451A9C0D4D006EB245 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB30A441A9C0D4D006EB245 /* main.m */; };
 		9BB30A481A9C0D4D006EB245 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB30A471A9C0D4D006EB245 /* AppDelegate.m */; };
 		9BB30A4A1A9C0D4D006EB245 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9BB30A491A9C0D4D006EB245 /* Images.xcassets */; };
@@ -16,6 +21,18 @@
 		9BE2FEF91AA06FA400E02FD1 /* transparent.png in Resources */ = {isa = PBXBuildFile; fileRef = 9BE2FEF81AA06FA400E02FD1 /* transparent.png */; };
 		9BE2FEFC1AA070AC00E02FD1 /* TrueCard.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BE2FEFB1AA070AC00E02FD1 /* TrueCard.m */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXBuildRule section */
+		9B9285441AA2D664009EF4DD /* PBXBuildRule */ = {
+			isa = PBXBuildRule;
+			compilerSpec = com.apple.compilers.proxy.script;
+			fileType = wrapper.xcdatamodel;
+			isEditable = 1;
+			outputFiles = (
+			);
+			script = "# momc\n";
+		};
+/* End PBXBuildRule section */
 
 /* Begin PBXContainerItemProxy section */
 		9BB30A531A9C0D4D006EB245 /* PBXContainerItemProxy */ = {
@@ -28,6 +45,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		9B03DA331AA51D3000DE5D53 /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utils.h; sourceTree = "<group>"; };
+		9B03DA341AA51D3000DE5D53 /* Utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Utils.m; sourceTree = "<group>"; };
+		9B234EC71AA3AB9400408265 /* NotificationCard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationCard.h; sourceTree = "<group>"; };
+		9B234EC81AA3AB9400408265 /* NotificationCard.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationCard.m; sourceTree = "<group>"; };
+		9B92853E1AA2CAA1009EF4DD /* TrueCards.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = TrueCards.xcdatamodel; sourceTree = "<group>"; };
+		9B9285401AA2CC0B009EF4DD /* CDManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CDManager.h; sourceTree = "<group>"; };
+		9B9285411AA2CC0B009EF4DD /* CDManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CDManager.m; sourceTree = "<group>"; };
+		9B9285451AA2DB72009EF4DD /* TOSMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOSMenu.h; sourceTree = "<group>"; };
+		9B9285461AA2DB72009EF4DD /* TOSMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOSMenu.m; sourceTree = "<group>"; };
 		9BB30A3F1A9C0D4D006EB245 /* tos.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = tos.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9BB30A431A9C0D4D006EB245 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9BB30A441A9C0D4D006EB245 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -96,6 +122,15 @@
 				9BB3CD561A9FED61009803C6 /* defines.h */,
 				9BE2FEFA1AA070AC00E02FD1 /* TrueCard.h */,
 				9BE2FEFB1AA070AC00E02FD1 /* TrueCard.m */,
+				9B92853D1AA2CAA1009EF4DD /* TrueCards.xcdatamodeld */,
+				9B9285401AA2CC0B009EF4DD /* CDManager.h */,
+				9B9285411AA2CC0B009EF4DD /* CDManager.m */,
+				9B9285451AA2DB72009EF4DD /* TOSMenu.h */,
+				9B9285461AA2DB72009EF4DD /* TOSMenu.m */,
+				9B234EC71AA3AB9400408265 /* NotificationCard.h */,
+				9B234EC81AA3AB9400408265 /* NotificationCard.m */,
+				9B03DA331AA51D3000DE5D53 /* Utils.h */,
+				9B03DA341AA51D3000DE5D53 /* Utils.m */,
 			);
 			path = tos;
 			sourceTree = "<group>";
@@ -138,6 +173,7 @@
 				9BB30A3D1A9C0D4D006EB245 /* Resources */,
 			);
 			buildRules = (
+				9B9285441AA2D664009EF4DD /* PBXBuildRule */,
 			);
 			dependencies = (
 			);
@@ -226,10 +262,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9B03DA351AA51D3000DE5D53 /* Utils.m in Sources */,
+				9B92853F1AA2CAA1009EF4DD /* TrueCards.xcdatamodeld in Sources */,
 				9BB30A481A9C0D4D006EB245 /* AppDelegate.m in Sources */,
+				9B9285421AA2CC0B009EF4DD /* CDManager.m in Sources */,
 				9BB3CD551A9FBF1F009803C6 /* TOSLog.m in Sources */,
 				9BB30A451A9C0D4D006EB245 /* main.m in Sources */,
 				9BE2FEFC1AA070AC00E02FD1 /* TrueCard.m in Sources */,
+				9B234EC91AA3AB9400408265 /* NotificationCard.m in Sources */,
+				9B9285471AA2DB72009EF4DD /* TOSMenu.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -346,6 +387,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = tos/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -357,6 +399,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = tos/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -376,6 +419,7 @@
 				);
 				INFOPLIST_FILE = tosTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/tos.app/Contents/MacOS/tos";
 			};
@@ -392,6 +436,7 @@
 				);
 				INFOPLIST_FILE = tosTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/tos.app/Contents/MacOS/tos";
 			};
@@ -428,6 +473,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		9B92853D1AA2CAA1009EF4DD /* TrueCards.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				9B92853E1AA2CAA1009EF4DD /* TrueCards.xcdatamodel */,
+			);
+			currentVersion = 9B92853E1AA2CAA1009EF4DD /* TrueCards.xcdatamodel */;
+			path = TrueCards.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 9BB30A371A9C0D4D006EB245 /* Project object */;
 }

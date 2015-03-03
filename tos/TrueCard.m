@@ -7,94 +7,155 @@
 //
 
 #import "TrueCard.h"
-
+#import "CDManager.h"
+#include <stdlib.h>
 @interface TrueCard()
-//@property (weak) IBOutlet NSWindow *window;
+@property (weak) IBOutlet NSWindow *window;
 
 @property NSTimer * trueCardTimer;
-@end
 
+@property (nonatomic) NSManagedObjectContext *managedObjectContext;
+
+@property NSInteger last_id;
+
+@end
 
 @implementation TrueCard
 
+
+-(void) insertCards {
+    NSManagedObject *object = [NSEntityDescription insertNewObjectForEntityForName:@"TrueCards"
+                                                            inManagedObjectContext:_managedObjectContext];
+    NSLog(@"with id: %ld", (long)[self numberOfCards]);
+    [object setValue:@"snk is dumb" forKey:@"text"];
+//    [object setValue:[self numberOfCards] forKey:@"id"];
+    
+    NSError *error;
+    if (![_managedObjectContext save:&error]) {
+        NSLog(@"Failed to save - error: %@", [error localizedDescription]);
+    }
+
+}
+
+-(NSInteger) numberOfCards {
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"TrueCards" inManagedObjectContext:_managedObjectContext];
+    [request setEntity:entity];
+
+    NSError *errorFetch = nil;
+    NSInteger nbc = [_managedObjectContext countForFetchRequest:request error:&errorFetch];
+    NSLog(@"nbc = %ld", nbc);
+    return nbc;
+    
+}
+
+-(void) randonCard {
+
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"TrueCards" inManagedObjectContext:_managedObjectContext];
+    [request setEntity:entity];
+    // Assumes that you know the number of objects per entity, and that your order starts at zero.
+//    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"id = %d", arc4random() % [self numberOfCards]];
+  //  [request setPredicate:predicate];
+    [request setFetchLimit:1];
+    NSError *error = nil;
+    NSArray *results = [_managedObjectContext executeFetchRequest:request error:&error];
+    NSLog(@"if - %ld", results.count);
+    if (results.count > 0) {
+            NSLog(@"ok");
+        NSManagedObject *object = [results objectAtIndex:0];
+        [self showSimpleCriticalAlert:[NSString stringWithFormat: @"%@ = %@", [object valueForKey:@"id"], [object valueForKey:@"text"]]];
+    }
+    
+    
+    
+//    [self showSimpleCriticalAlert:@"erro"];
+    
+}
+
+
+-(void)showSimpleCriticalAlert:(NSString *)msg
+{
+    NSAlert *alert = [[NSAlert alloc] init];
+    NSWindow *window;
+    [alert addButtonWithTitle:@"OK"];
+    [alert setMessageText:@"Rede"];
+    [alert setIcon:[NSImage imageNamed:@"transparent.png"]];
+    [alert setInformativeText:msg];
+    //  [alert setAlertStyle:NSCriticalAlertStyle];
+    [alert beginSheetModalForWindow:window modalDelegate:self didEndSelector:nil contextInfo:nil];
+}
+
+- (NSManagedObjectContext *)managedObjectContext
+{
+    if (_managedObjectContext != nil) {
+        return _managedObjectContext;
+    }
+
+    CDManager * cdm = [[CDManager alloc] init];
+    _managedObjectContext = [cdm managedObjectContext];
+    
+    [self emptyTable];
+    [self readFile];
+
+    
+    return _managedObjectContext;
+}
+
+
 -(void) setTrueCardTimer {
+    /*
+    [self managedObjectContext];
+
     _trueCardTimer = [NSTimer
-                      scheduledTimerWithTimeInterval:(3)
+                      scheduledTimerWithTimeInterval:(5)
                       target:self
                       selector:@selector(randonCard)
                       userInfo:nil
                       repeats:YES];
+     */
 }
 
 -(void) invalidateTrueCardTimer {
     [_trueCardTimer invalidate];
 }
 
--(void) randonCard {
-    [self showSimpleCriticalAlert];
+-(void) emptyTable {
+    NSFetchRequest * all = [[NSFetchRequest alloc] init];
+    [all setEntity:[NSEntityDescription entityForName:@"TrueCards" inManagedObjectContext:_managedObjectContext]];
+    [all setIncludesPropertyValues:NO]; //only fetch the managedObjectID
+    
+    NSError * error = nil;
+    NSArray * cards = [_managedObjectContext executeFetchRequest:all error:&error];
+
+    //error handling goes here
+    for (NSManagedObject * card in cards) {
+        [_managedObjectContext deleteObject:card];
+    }
+    NSError *saveError = nil;
+    [_managedObjectContext save:&saveError];
 }
 
--(void)showSimpleCriticalAlert
-{
-    NSAlert *alert = [[NSAlert alloc] init];
-    NSWindow *window;
-    [alert addButtonWithTitle:@"OK"];
-    [alert setMessageText:@"Alert"];
-    [alert setIcon:[NSImage imageNamed:@"transparent.png"]];
-    [alert setInformativeText:@"NSCriticalAlertStyle\rPlease enter a valid email iasdfas dfasdkfja ;sdjfl;ajsd fkljaskdfjakw fasdfja sdkfj askdfjaskdf asdjf asjdfk asdjf asdfjaksdfjkasd fasjdkf asjkdf ajksdf aksdfd."];
-    //  [alert setAlertStyle:NSCriticalAlertStyle];
-    [alert beginSheetModalForWindow:window modalDelegate:self didEndSelector:nil contextInfo:nil];
+
+-(void) readFile {
+    NSString *documentsDirectory = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
+    NSString *fileName = [documentsDirectory stringByAppendingPathComponent:@"_true_cards.txt"];
+    
+    // read everything from text
+    NSString* fileContents =
+    [NSString stringWithContentsOfFile:fileName
+                              encoding:NSUTF8StringEncoding error:nil];
+    
+    // first, separate by new line
+    NSArray* allLinedStrings =
+    [fileContents componentsSeparatedByCharactersInSet:
+     [NSCharacterSet newlineCharacterSet]];
+
+    NSInteger i = 0;
+    for (NSString * line in allLinedStrings) {
+    
+        
+    }
 }
 
-/*
--(void)showSimpleAlert
-{
-    NSWindow *window;
-
-    NSAlert *alert = [[NSAlert alloc] init];
-    [alert addButtonWithTitle:@"Continue"];
-    [alert addButtonWithTitle:@"Cancel"];
-    [alert setMessageText:@"Alert"];
-    [alert setInformativeText:@"alert zone"];
-    [alert setAlertStyle:NSWarningAlertStyle];
-    [alert beginSheetModalForWindow:window modalDelegate:self didEndSelector:nil contextInfo:nil];
-}
-*/
-
-- (void)alertDidEnd:(NSAlert *)alert returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
-{
-    /*
-     The following options are deprecated in 10.9. Use NSAlertFirstButtonReturn instead
-     NSAlertDefaultReturn = 1,
-     NSAlertAlternateReturn = 0,
-     NSAlertOtherReturn = -1,
-     NSAlertErrorReturn = -2
-     NSOKButton = 1, // NSModalResponseOK should be used
-     NSCancelButton = 0 // NSModalResponseCancel should be used
-     */
-    if (returnCode == NSOKButton)
-    {
-        NSLog(@"(returnCode == NSOKButton)");
-    }
-    else if (returnCode == NSCancelButton)
-    {
-        NSLog(@"(returnCode == NSCancelButton)");
-    }
-    else if(returnCode == NSAlertFirstButtonReturn)
-    {
-        NSLog(@"if (returnCode == NSAlertFirstButtonReturn)");
-    }
-    else if (returnCode == NSAlertSecondButtonReturn)
-    {
-        NSLog(@"else if (returnCode == NSAlertSecondButtonReturn)");
-    }
-    else if (returnCode == NSAlertThirdButtonReturn)
-    {
-        NSLog(@"else if (returnCode == NSAlertThirdButtonReturn)");
-    }
-    else
-    {
-        NSLog(@"All Other return code %d",returnCode);
-    }
-}
 @end;
