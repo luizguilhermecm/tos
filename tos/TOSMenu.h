@@ -12,4 +12,16 @@
 
 @interface TOSMenu : NSObject
 
+@property (strong) IBOutlet NSMenu * mainMenu;
+
++(id)sharedMenu;
+-(void)updateSubMenuItemTimer;
+-(void)getFrontAppWithNot;
+
+
+
+
+@property (strong) IBOutlet NSMenuItem * notificationStartMI;
+@property (strong) IBOutlet NSMenuItem * notificationStopMI;
+
 @end

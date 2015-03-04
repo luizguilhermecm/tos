@@ -15,4 +15,10 @@
 +(void) readFile;
 +(NSInteger)nb;
 
+
++(void)newNotificationCardWithText:(NSString *)title
+                          subtitle:(NSString *)sub
+                              text:(NSString*)atext;
+
+
 @end

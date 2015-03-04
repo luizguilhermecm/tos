@@ -10,6 +10,11 @@
 
 @interface AppDelegate : NSObject <NSApplicationDelegate>
 
+-(IBAction) quitTOS :(id)sender;
+-(IBAction) notificationStop :(id)sender;
+-(IBAction) resetTOS :(id)sender;
+-(IBAction) notificationStart :(id)sender;
+-(IBAction) updateMenu :(id)sender;
 
 @end
 

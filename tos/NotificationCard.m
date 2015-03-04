@@ -35,8 +35,18 @@ static NSMutableArray *notifications;
 
 }
 
-+(void) newNotificationCard
-{
++(void)newNotificationCardWithText:(NSString *)title
+                          subtitle:(NSString *)sub
+                              text:(NSString*)atext {
+    NSUserNotification *withText = [[NSUserNotification alloc] init];
+    [withText setTitle:title];
+    [withText setSubtitle:sub];
+    [withText setInformativeText:atext];
+    
+    [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:withText];
+}
+
++(void) newNotificationCard {
     
     [[NSUserNotificationCenter defaultUserNotificationCenter]
         deliverNotification:[notifications objectAtIndex:[self randomNumber:nb]]];

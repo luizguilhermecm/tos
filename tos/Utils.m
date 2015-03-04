@@ -12,12 +12,43 @@
 
 
 @implementation Utils
-+(NSString *)formatTos:(NSTimeInterval)interval status:(NSString*)astatus{
+
++(NSString *)statusIdToString:(NSInteger)astatus {
+    if (astatus == IDLE_STATUS) {
+        return @"IDLE";
+    } else if (astatus == TOS_STATUS) {
+        return @"TOS";
+    } else if (astatus == NOT_STATUS) {
+        return @"NOT";
+    } else if (astatus == FORCED_NOT) {
+        return @"!NOT!";
+    } else if (astatus == SLEEP_STATUS) {
+        return @"SLEEP";
+    } else if (astatus == WAKE_STATUS) {
+        return @"WAKE";
+    } else if (astatus == QUIT_TOS) {
+        return @"QUIT";
+    } else {
+        return @"ERROR";
+    }
+}
+
++(NSString *) formartTime:(NSTimeInterval)interval {
     NSInteger ti = (NSInteger)interval;
     NSInteger seconds = ti % 60;
     NSInteger minutes = (ti / 60) % 60;
     NSInteger hours = (ti / 3600);
-    return [NSString stringWithFormat:@"%@: %02ld:%02ld:%02ld", astatus, (long)hours, (long)minutes, (long)seconds];
+    return [NSString stringWithFormat:@"%02ld:%02ld:%02ld",
+            (long)hours, (long)minutes, (long)seconds];
+}
+
++(NSString *)formatTos:(NSTimeInterval)interval status:(NSInteger)astatus{
+    NSInteger ti = (NSInteger)interval;
+    NSInteger seconds = ti % 60;
+    NSInteger minutes = (ti / 60) % 60;
+    NSInteger hours = (ti / 3600);
+    return [NSString stringWithFormat:@"%@: %02ld:%02ld:%02ld",
+            [Utils statusIdToString:astatus], (long)hours, (long)minutes, (long)seconds];
 }
 
 +(void) runningApps {
@@ -76,6 +107,17 @@
     [alert setAlertStyle:NSCriticalAlertStyle];
     [alert beginSheetModalForWindow:window modalDelegate:self didEndSelector:nil contextInfo:nil];
 }
+
++(NSString *)getNewIntervalFromDateFormated:(NSDate *)adate status:(NSInteger)astatus{
+    NSTimeInterval interval = [Utils getNewIntervalFromDate:adate];
+    return [Utils formatTos:interval status:astatus];
+}
+
++(NSTimeInterval)getNewIntervalFromDate:(NSDate *)adate {
+    return [adate timeIntervalSinceNow] * -1;
+}
+
+
 
 
 @end

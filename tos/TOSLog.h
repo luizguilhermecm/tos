@@ -9,5 +9,5 @@
 #import <Foundation/Foundation.h>
 
 @interface TOSLog : NSObject
--(void)LogInterval:(NSTimeInterval)interval status:(NSInteger)astatus;
++(void)LogInterval:(NSTimeInterval)interval status:(NSInteger)astatus;
 @end

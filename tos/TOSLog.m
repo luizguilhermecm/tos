@@ -8,6 +8,7 @@
 
 #import "TOSLog.h"
 #import "defines.h"
+#import "Utils.h"
 
 @implementation TOSLog
 
@@ -29,11 +30,11 @@
     return @"ERROR:";
 }
 
--(void)LogInterval:(NSTimeInterval)interval status:(NSInteger)astatus {
-    [self writeToLogFile:[self formatLogTime:interval status:[self getStatusName:astatus]]];
++(void)LogInterval:(NSTimeInterval)interval status:(NSInteger)astatus {
+    [self writeToLogFile:[Utils formatTos:interval status:astatus]];
 }
 
--(NSString *)formatLogTime:(NSTimeInterval)interval status:(NSString*)astatus{
++(NSString *)formatLogTime:(NSTimeInterval)interval status:(NSString*)astatus{
     NSInteger ti = (NSInteger)interval;
     NSInteger seconds = ti % 60;
     NSInteger minutes = (ti / 60) % 60;
@@ -41,7 +42,7 @@
     return [NSString stringWithFormat:@"%@ %02ld:%02ld:%02ld", astatus, (long)hours, (long)minutes, (long)seconds];
 }
 
--(void) writeToLogFile:(NSString*)content{
++(void) writeToLogFile:(NSString*)content{
     
     content = [NSString stringWithFormat:@"%@ : %@\n",[NSDate date], content];
     
