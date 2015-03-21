@@ -11,14 +11,17 @@
 
 
 @interface NotificationCard : NSObject
-+(void) newNotificationCard;
++(NSUserNotification *) newNotificationCard;
 +(void) readFile;
 +(NSInteger)nb;
-
-
++(NSDate *)lastTcDeliveredDate;
++(NSString *)lastTcIdentifier;
++(void)lastTcDeliveredDateWith:(NSDate *)adate;
 +(void)newNotificationCardWithText:(NSString *)title
                           subtitle:(NSString *)sub
                               text:(NSString*)atext;
+
++(void)removeAllNotifications;
 
 
 @end

@@ -13,21 +13,42 @@
 
 @implementation Utils
 
+
+#define SCREEN_DID_SLEEP_EVENT 40
+#define WILL_SLEEP_EVENT 41
+#define SCREEN_DID_WAKE_EVENT 42
+#define DID_WAKE_EVENT 43
+
++(NSString *)eventIdToString:(NSInteger)aevent {
+    if (aevent == SLEEP_EVENT) {
+        return @"SLEEP_EVENT";
+    } else if (aevent == WAKE_EVENT) {
+        return @"WAKE_EVENT";
+    } else if (aevent == QUIT_EVENT) {
+        return @"QUIT_EVENT";
+    } else if (aevent == SCREEN_DID_SLEEP_EVENT) {
+        return @"SCREEN_DID_SLEEP_EVENT";
+    } else if (aevent == WILL_SLEEP_EVENT) {
+        return @"WILL_SLEEP_EVENT";
+    } else if (aevent == DID_WAKE_EVENT) {
+        return @"DID_WAKE_EVENT";
+    } else if (aevent == SCREEN_DID_WAKE_EVENT) {
+        return @"SCREEN_DID_WAKE_EVENT";
+    } else {
+        return @"ERROR";
+    }
+}
+
+
 +(NSString *)statusIdToString:(NSInteger)astatus {
     if (astatus == IDLE_STATUS) {
         return @"IDLE";
     } else if (astatus == TOS_STATUS) {
-        return @"TOS";
+        return @" TOS";
     } else if (astatus == NOT_STATUS) {
-        return @"NOT";
+        return @" NOT";
     } else if (astatus == FORCED_NOT) {
         return @"!NOT!";
-    } else if (astatus == SLEEP_STATUS) {
-        return @"SLEEP";
-    } else if (astatus == WAKE_STATUS) {
-        return @"WAKE";
-    } else if (astatus == QUIT_TOS) {
-        return @"QUIT";
     } else {
         return @"ERROR";
     }
@@ -53,16 +74,16 @@
 
 +(void) runningApps {
     NSArray * running = [[NSWorkspace sharedWorkspace] runningApplications];
-
+    
     for (NSRunningApplication * app in running) {
-//        [array addObject:app.bundleIdentifier];
-        NSLog(app.bundleIdentifier);
+        //        [array addObject:app.bundleIdentifier];
+///        NSLog(app.bundleIdentifier);
     }
 }
 
 +(NSInteger) isAppOpen:(NSString *)thisApp {
     NSArray * running = [NSRunningApplication runningApplicationsWithBundleIdentifier:thisApp];
-//    [self runningApps];
+    //    [self runningApps];
     if([running count] > 0){
         return 1;
     } else {

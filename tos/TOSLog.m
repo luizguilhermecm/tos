@@ -11,7 +11,7 @@
 #import "Utils.h"
 
 @implementation TOSLog
-
+/*
 -(NSString *) getStatusName:(NSInteger)status {
     if (status == TOS_STATUS){
             return @"TOS :";
@@ -29,9 +29,16 @@
 
     return @"ERROR:";
 }
+ */
 
+
++(void)LogEvent:(NSInteger)aevent {
+     [self writeToLogFile:[Utils eventIdToString:aevent]];
+}
 +(void)LogInterval:(NSTimeInterval)interval status:(NSInteger)astatus {
-    [self writeToLogFile:[Utils formatTos:interval status:astatus]];
+    if (interval > MIN_INTERVAL_TO_LOG) {
+        [self writeToLogFile:[Utils formatTos:interval status:astatus]];
+    }
 }
 
 +(NSString *)formatLogTime:(NSTimeInterval)interval status:(NSString*)astatus{
@@ -42,9 +49,17 @@
     return [NSString stringWithFormat:@"%@ %02ld:%02ld:%02ld", astatus, (long)hours, (long)minutes, (long)seconds];
 }
 
++(NSString *)getFormatedDate {
+    
+    NSDateFormatter *format = [[NSDateFormatter alloc] init];
+    [format setDateFormat:@"dd-MM-yyyy HH:mm"];
+    
+    return [format stringFromDate:[NSDate date]];
+}
+
 +(void) writeToLogFile:(NSString*)content{
     
-    content = [NSString stringWithFormat:@"%@ : %@\n",[NSDate date], content];
+    content = [NSString stringWithFormat:@"%@ -> %@\n",[TOSLog getFormatedDate], content];
     
     //get the documents directory:
     NSString *documentsDirectory = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];

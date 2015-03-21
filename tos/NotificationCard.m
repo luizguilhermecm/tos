@@ -12,19 +12,26 @@
 @interface NotificationCard()
 
 //@property NSArray * notis;
+
+
 @end
 
 static NSInteger nb;
-static NSInteger indexNot = 0;
 static NSMutableArray *notifications;
+static NSString *lastTcIdentifier;
+static NSDate *lastTcDeliveredDate;
 
 @implementation NotificationCard
 
++(NSDate *)lastTcDeliveredDate{return lastTcDeliveredDate;}
++(void)lastTcDeliveredDateWith:(NSDate *)adate{lastTcDeliveredDate = adate;}
++(NSString *)lastTcIdentifier{return lastTcIdentifier;}
+
 +(NSInteger)nb{return nb;}
 
-+(NSInteger)getIndex {
-    indexNot += 1;
-    return indexNot;
++(void)removeAllNotifications {
+    [notifications removeAllObjects];
+    nb = 0;
 }
 
 +(NSInteger) randomNumber:(NSInteger)max {
@@ -42,14 +49,15 @@ static NSMutableArray *notifications;
     [withText setTitle:title];
     [withText setSubtitle:sub];
     [withText setInformativeText:atext];
-    
+
     [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:withText];
 }
 
-+(void) newNotificationCard {
-    
-    [[NSUserNotificationCenter defaultUserNotificationCenter]
-        deliverNotification:[notifications objectAtIndex:[self randomNumber:nb]]];
++(NSUserNotification *) newNotificationCard {
+    NSUserNotification *n = [notifications objectAtIndex:[self randomNumber:nb]];
+    lastTcIdentifier = n.identifier;
+    [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:n];
+    return n;
 }
 
 +(void) readFile {
@@ -76,6 +84,7 @@ static NSMutableArray *notifications;
             [notification setTitle:fields[0]];
             [notification setSubtitle:fields[1]];
             [notification setInformativeText:fields[2]];
+             notification.identifier = [NSString stringWithFormat:@"tcID_%ld", nb ];
             
             [notifications addObject:notification];
         }

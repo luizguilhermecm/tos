@@ -136,6 +136,12 @@
     [_managedObjectContext save:&saveError];
 }
 
+-(BOOL)userNotificationCenter:(NSUserNotificationCenter *)center
+    shouldPresentNotification:(NSUserNotification *)notification {
+    return YES;
+}
+
+
 
 -(void) readFile {
     NSString *documentsDirectory = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];

@@ -26,6 +26,7 @@
 @property (strong) IBOutlet NSMenu * toolSubmenu;
 @property (strong) IBOutlet NSMenuItem * quitMI;
 @property (strong) IBOutlet NSMenuItem * resetMI;
+@property (strong) IBOutlet NSMenuItem * windowMI;
 
 @property (strong) IBOutlet NSMenu * idleSubmenu;
 
@@ -54,8 +55,7 @@
 
 -(instancetype)init {
 
-    _mainMenu = [[NSMenu alloc] initWithTitle:@"TOS"];
-    
+    _mainMenu = [[NSMenu alloc] initWithTitle:@"TOS" ];
     
     _tosUpdateMI = [[NSMenuItem alloc] initWithTitle:@"update"
                                               action:@selector(updateMenu:)
@@ -82,6 +82,9 @@
                                                      action:@selector(notificationStop:)
                                               keyEquivalent:@""];
     
+    _windowMI = [[NSMenuItem alloc] initWithTitle:@"Text"
+                                                     action:@selector(textEditorMI:)
+                                              keyEquivalent:@"t"];
     _tosMI =  [[NSMenuItem alloc] initWithTitle:@"TOS" action:nil keyEquivalent:@""];
     _notMI =  [[NSMenuItem alloc] initWithTitle:@"NOT" action:nil keyEquivalent:@""];
     _idleMI = [[NSMenuItem alloc] initWithTitle:@"IDLE" action:nil keyEquivalent:@""];
@@ -107,7 +110,8 @@
     [_toolSubmenu insertItem:_notificationStopMI atIndex:1];
     [_toolSubmenu insertItem:_resetMI atIndex:2];
     [_toolSubmenu insertItem:_quitMI atIndex:3];
-
+    [_toolSubmenu insertItem:_windowMI atIndex:4];
+    
     _notApp =  [[NSMutableDictionary alloc] init];
     _tosAlgorithm = [TOSAlgorithm sharedAlgorithm];
     return self;

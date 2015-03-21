@@ -10,4 +10,5 @@
 
 @interface TOSLog : NSObject
 +(void)LogInterval:(NSTimeInterval)interval status:(NSInteger)astatus;
++(void)LogEvent:(NSInteger)aevent;
 @end

@@ -27,6 +27,7 @@
 +(void)showAlert:(NSString *)title  text:(NSString *) atext;
 
 +(NSString *)statusIdToString:(NSInteger)astatus;
++(NSString *)eventIdToString:(NSInteger)aevent;
 
 //return the number os secondes since date
 +(NSTimeInterval)getNewIntervalFromDate:(NSDate *)adate;
@@ -36,5 +37,8 @@
 
 //format seconds in 00:00:00
 +(NSString *) formartTime:(NSTimeInterval)interval;
+
+
+
 
 @end
