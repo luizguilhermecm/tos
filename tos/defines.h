@@ -30,6 +30,7 @@
 #define PEACE 12
 
 #define UPDATE 5
+#define ONE_MINUTE 60
 #define IDLE_MAX 60
 
 #define MIN_INTERVAL_TO_LOG 60

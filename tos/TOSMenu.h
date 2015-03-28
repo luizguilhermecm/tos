@@ -17,6 +17,7 @@
 +(id)sharedMenu;
 -(void)updateSubMenuItemTimer;
 -(void)getFrontAppWithNot;
+-(void)updateSubMenuTimer;
 
 
 

@@ -19,6 +19,9 @@
 @property NSTimeInterval tosTime;
 @property NSTimeInterval idleTime;
 @property NSTimeInterval notTime;
+@property NSTimeInterval tosTimeSum;
+@property NSTimeInterval idleTimeSum;
+@property NSTimeInterval notTimeSum;
 
 @property NSInteger statusNow;
 @property (strong, nonatomic) NSDate *startInterval;

@@ -24,20 +24,28 @@
 @synthesize tosTime;
 @synthesize idleTime;
 @synthesize notTime;
+
+@synthesize tosTimeSum;
+@synthesize idleTimeSum;
+@synthesize notTimeSum;
+
 @synthesize statusNow;
 
 -(void)idleTimer:(NSTimeInterval)interval {
     idleTime += interval;
+    idleTimeSum += interval;
 }
 
 
 -(void)tosTimer :(NSTimeInterval)interval{
     tosTime += interval;
+    tosTimeSum += interval;
 }
 
 
 -(void)notTimer :(NSTimeInterval)interval{
     notTime += interval;
+    notTimeSum += interval;
 }
 
 

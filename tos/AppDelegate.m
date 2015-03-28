@@ -41,7 +41,7 @@
 @property TOSMenu *tosMenu;
 
 @property NSTimer * trueCardTimer;
-
+@property NSTimer * updateMenus;
 @property NSTimer * responseTimerNotification;
 
 @end
@@ -89,6 +89,7 @@
 }
 
 -(void)checkMindMap {
+    /*
     NSRunningApplication *_frontApp = [[NSWorkspace sharedWorkspace] frontmostApplication];
     if ([_frontApp.bundleIdentifier isEqualToString:@"com.mindnode.MindNodePro"]) {
         _lastTimeInFront = [NSDate date];
@@ -100,6 +101,7 @@
             _lastTimeInFront = [NSDate date];
         }
     }
+     */
 }
 
 // work flow when status is TOS
@@ -194,7 +196,11 @@ BOOL checkAccessibility()
     [_statusItem setEnabled:YES];
     [_statusItem setHighlightMode:YES];
     [_statusItem setMenu:[_tosMenu mainMenu]];
+
     
+    /*     Text Editor Staff
+     
+     
     if (checkAccessibility()) {
         NSLog(@"Accessibility Enabled");
     }
@@ -211,8 +217,11 @@ BOOL checkAccessibility()
                                                }
                                            }];
 
+     */
     
     [self startTOS];
+    [[NSWorkspace sharedWorkspace] showSearchResultsForQueryString:@"SMTP"];
+
 }
 
 
@@ -224,6 +233,7 @@ BOOL checkAccessibility()
 
 -(IBAction) updateMenu :(id)sender {
     [_tosMenu updateSubMenuItemTimer];
+    [_tosMenu updateSubMenuTimer];
 }
 
 
