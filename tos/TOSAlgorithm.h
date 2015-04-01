@@ -23,6 +23,7 @@
 @property NSTimeInterval idleTimeSum;
 @property NSTimeInterval notTimeSum;
 
+
 @property NSInteger statusNow;
 @property (strong, nonatomic) NSDate *startInterval;
 

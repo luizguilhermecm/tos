@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface TOSLog : NSObject
+@interface TOSLog : NSObject 
 +(void)LogInterval:(NSTimeInterval)interval status:(NSInteger)astatus;
 +(void)LogEvent:(NSInteger)aevent;
 @end

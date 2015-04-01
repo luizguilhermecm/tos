@@ -107,11 +107,12 @@
 // work flow when status is TOS
 -(void)tosStatusWF {
     [self checkMindMap];
+    [_tosMenu getFrontApp];
 }
 
 // work flow when status is NOT
 -(void)notStatusWF {
-    [_tosMenu getFrontAppWithNot];
+    [_tosMenu getFrontApp];    
 }
 
 // work flow when status is IDLE
@@ -220,7 +221,7 @@ BOOL checkAccessibility()
      */
     
     [self startTOS];
-    [[NSWorkspace sharedWorkspace] showSearchResultsForQueryString:@"SMTP"];
+//    [[NSWorkspace sharedWorkspace] showSearchResultsForQueryString:@"SMTP"];
 
 }
 

@@ -13,7 +13,6 @@
 #import "TOSAlgorithm.h"
 #import "AppDelegate.h"
 
-
 @interface TOSMenu()
 
 
@@ -36,13 +35,21 @@
 
 @property NSTimer *notificationTimer;
 
-@property NSMutableDictionary * notApp;
+@property NSMutableDictionary * notAppDictonary;
+@property NSMutableDictionary * tosAppDictonary;
+@property NSMutableDictionary * idleAppDictonary;
 
 @property TOSAlgorithm *tosAlgorithm;
+
+@property NSMutableArray * list;
+
 @end
 
 @implementation TOSMenu
 
+-(NSMenu *)getNotSubmenu {
+    return _notSubmenu;
+}
 
 + (id)sharedMenu {
     static TOSMenu *sharedMenu = nil;
@@ -112,27 +119,46 @@
     [_toolSubmenu insertItem:_quitMI atIndex:3];
     [_toolSubmenu insertItem:_windowMI atIndex:4];
     
-    _notApp =  [[NSMutableDictionary alloc] init];
+    _notAppDictonary =  [[NSMutableDictionary alloc] init];
+    _tosAppDictonary =  [[NSMutableDictionary alloc] init];
+    _idleAppDictonary =  [[NSMutableDictionary alloc] init];
+    
     _tosAlgorithm = [TOSAlgorithm sharedAlgorithm];
     return self;
 }
-
 
 // atualiza o tempo dos aplicativos no submenu NOT
 -(void)updateSubMenuItemTimer {
     
     [_tosActualMI setTitle:[Utils getNewIntervalFromDateFormated:_tosAlgorithm.startInterval
-                                                          status:_tosAlgorithm.statusNow]];
-    
+                                                          status: _tosAlgorithm.statusNow]];
+ /*
     NSArray *items = [_notSubmenu itemArray];
     for (NSMenuItem *item in items) {
-        NSTimeInterval t = [_notApp[[item toolTip]] integerValue];
+        NSTimeInterval t = [_notAppDictonary[[item toolTip]] integerValue];
         NSString * newTitle = [NSString stringWithFormat:@"%@ %@",
                                [Utils formartTime:t], [item toolTip]];
         [item setTitle:newTitle];
     }
+*/
+    
+    [self updateStatusSubMenu:_tosSubmenu dictionary:_tosAppDictonary];
+    [self updateStatusSubMenu:_notSubmenu dictionary:_notAppDictonary];
+    [self updateStatusSubMenu:_idleSubmenu dictionary:_idleAppDictonary];
+    
+
 }
 
+
+-(void)updateStatusSubMenu:(NSMenu *)submenu dictionary:(NSMutableDictionary *)dic {
+    NSArray * items = [submenu itemArray];
+    for (NSMenuItem *item in items) {
+        NSTimeInterval t = [dic [[item toolTip]] integerValue];
+        NSString * newTitle = [NSString stringWithFormat:@"%@ %@",
+                              [item toolTip], [Utils formartTime:t]];
+        [item setTitle:newTitle];
+    }
+}
 
 -(void)updateSubMenuTimer {
     [_idleMI setTitle:[Utils formatTos:_tosAlgorithm.idleTime status:IDLE_STATUS]];
@@ -146,21 +172,80 @@
     NSString *fapp = _frontApp.localizedName;
     NSInteger tag = [_notSubmenu numberOfItems];
     
-    NSNumber *index = [_notApp objectForKey:fapp];
+    NSNumber *index = [_notAppDictonary objectForKey:fapp];
     
     // index == nil means it isn't in the NOT list in Menu.
     if (index == nil) {
         NSMenuItem * novo = [_notSubmenu insertItemWithTitle:fapp action:nil keyEquivalent:@"" atIndex:0];
         [novo setToolTip:fapp];
         [novo setTag:tag];
-        [_notApp setObject:[NSNumber numberWithInt:0] forKey:fapp];
+        [_notAppDictonary setObject:[NSNumber numberWithInt:0] forKey:fapp];
     } else {
         // if the app is in the list, then increase the count (timer)
-        NSInteger count = [_notApp[fapp] integerValue];
+        NSInteger count = [_notAppDictonary[fapp] integerValue];
         count += UPDATE;
-        _notApp[fapp] = [NSNumber numberWithInteger:count];
+        _notAppDictonary[fapp] = [NSNumber numberWithInteger:count];
     }
 }
 
+-(NSInteger)getTagOfStatusSubmenu {
+    if (_tosAlgorithm.statusNow == TOS_STATUS) {
+        return [_tosSubmenu numberOfItems];
+    } else if (_tosAlgorithm.statusNow == IDLE_STATUS) {
+        return [_idleSubmenu numberOfItems];
+    } else if (_tosAlgorithm.statusNow == NOT_STATUS) {
+        return [_notSubmenu numberOfItems];
+    } else {
+        return -1;
+    }
+}
+-(NSMutableDictionary *)getDictionaryOfStatus {
+    if (_tosAlgorithm.statusNow == TOS_STATUS) {
+        return _tosAppDictonary;
+    } else if (_tosAlgorithm.statusNow == IDLE_STATUS) {
+        return _idleAppDictonary;
+    } else if (_tosAlgorithm.statusNow == NOT_STATUS) {
+        return _notAppDictonary;
+    } else {
+        return [[NSMutableDictionary alloc] init];;
+    }
+}
+
+-(NSMenu *)getMenuOfStatus {
+    if (_tosAlgorithm.statusNow == TOS_STATUS) {
+        return _tosSubmenu;
+    } else if (_tosAlgorithm.statusNow == IDLE_STATUS) {
+        return _idleSubmenu;
+    } else if (_tosAlgorithm.statusNow == NOT_STATUS) {
+        return _notSubmenu;
+    } else {
+        return nil;
+    }
+}
+
+
+
+-(void)getFrontApp {
+    
+    NSRunningApplication *_frontApp = [[NSWorkspace sharedWorkspace] frontmostApplication];
+    NSString *fapp = _frontApp.localizedName;
+    NSInteger tag = [self getTagOfStatusSubmenu];
+    NSMutableDictionary * ad = [self getDictionaryOfStatus];
+    NSNumber *index = [ad objectForKey:fapp];
+    NSMenu * menu = self.getMenuOfStatus;
+    
+    // index == nil means it isn't in the NOT list in Menu.
+    if (index == nil) {
+        NSMenuItem * novo = [menu insertItemWithTitle:fapp action:nil keyEquivalent:@"" atIndex:0];
+        [novo setToolTip:fapp];
+        [novo setTag:tag];
+        [ad setObject:[NSNumber numberWithInt:0] forKey:fapp];
+    } else {
+        // if the app is in the list, then increase the count (timer)
+        NSInteger count = [ad[fapp] integerValue];
+        count += UPDATE;
+        ad[fapp] = [NSNumber numberWithInteger:count];
+    }
+}
 
 @end

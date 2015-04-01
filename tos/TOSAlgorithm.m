@@ -31,6 +31,7 @@
 
 @synthesize statusNow;
 
+
 -(void)idleTimer:(NSTimeInterval)interval {
     idleTime += interval;
     idleTimeSum += interval;

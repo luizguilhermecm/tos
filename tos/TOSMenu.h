@@ -19,7 +19,9 @@
 -(void)getFrontAppWithNot;
 -(void)updateSubMenuTimer;
 
+-(void)getFrontApp;
 
+-(NSMenu *)getNotSubmenu;
 
 
 @property (strong) IBOutlet NSMenuItem * notificationStartMI;
