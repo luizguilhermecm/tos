@@ -1,0 +1,7 @@
+TOS - Time of Study
+
+TOS was made to be and menubar app, because I wont need to see it when I was switching apps. It keeps on menubar just an word, indicating the status which can be 'TOS', 'NOT' or 'IDLE'.
+
+TOS is an app that measure how much time I spent studying, not stydying and idle.
+
+TOS keep the log of slices of each time on file and shows on its own menu the sum of time of which status.
